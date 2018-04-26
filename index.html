@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!--
+    Writen by Bruno Santos
+    Writen on Nov 23, 2016
+-->
+<html>
+	<head>
+		<title>Final Project</title>
+        <meta charset="UTF-8" />
+        <script src="script.js" type="text/javascript" defer></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body onload="reset()">
+        <div id='alert' class='msgBoxDialog'>
+            <div id="alertMsg"></div>
+            <center><button id="msgBoxDialogBtn" onclick="hideAlert()">Ok</button></center>
+        </div>
+
+        <canvas id="myCanvas" onclick="getPositionClicked(event)" width="800" height="400">
+            Your browser does not support the HTML5 canvas tag.
+        </canvas>
+    </body>
+</html>

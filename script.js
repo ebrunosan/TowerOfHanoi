@@ -4,11 +4,19 @@
 "use strict";
 var c, ctx;                     // used to draw canvas
 
+const GAME_LEVEL = 3;           // TODO: define object
+
+const BASIC_LEVEL = 3;           // TODO: define object
+const BASIC_MOVEMENTS = 7;
+const HARD_LEVEL = 4;           // TODO: define object
+const HARD_MOVEMENTS = 15;
+const PRO_LEVEL = 4;           // TODO: define object
+const PRO_MOVEMENTS = 31;
+
 const RING_HEIGHT = 20;         // fixed high of rings
 
 var towerArr = [5];             // array length of max level which contains tower's objects 
 var countPlayersMovement = 0;   // general counter to show
-var movementsToSolveArr = [];   // solution loaded every reset game or level
 var bestMovementsToSolve = 0;   // it's a counter of an array movementsToSolve
 
 /* ----------------
@@ -120,7 +128,7 @@ function Ring(size) {
 /* ----------------
 * FUNCTION: It interact with rings if it's clicked over tower's coordinate
 */
-function getPositionClicked() {
+function getPositionClicked(event) {
     var xClicked = event.offsetX;
     var yClicked = event.offsetY;
 
@@ -167,7 +175,6 @@ function moveRing(idxTowerSrc, idxTowerDst) {
         towerArr[idxTowerDst].receiveNewRing(ring2Move);
         countPlayersMovement++;
         checkEndOfGame(idxTowerDst);
-        document.getElementById("playersMovements").value = countPlayersMovement;
     } else {
         showAlert("<h2>Ops!</h2>Movement not allowed!<br>You can't move a higher ring over a lower one.<br>Click on <strong>instructions</strong> to check it out all rules if you want.", "hideAlert");
     }
@@ -176,8 +183,7 @@ function moveRing(idxTowerSrc, idxTowerDst) {
 * FUNCTION: Shows message and reset the game if users reach end of the game
 */
 function checkEndOfGame(idxTowerDst) {
-    var levelSelected = +document.getElementById("level").value;
-    if (idxTowerDst != 0 && towerArr[idxTowerDst].ringsArr.length == levelSelected) {
+    if (idxTowerDst != 0 && towerArr[idxTowerDst].ringsArr.length == GAME_LEVEL) {
         var msg = "";
         if (countPlayersMovement == bestMovementsToSolve) {
             msg = "<h2>Perfect!</h2>You reached the goal pretty well!";
@@ -190,13 +196,6 @@ function checkEndOfGame(idxTowerDst) {
     }
 }
 /* ----------------
-* FUNCTION: Called only when it loads HTML
-*/
-function starts() {
-    reset();
-    showInstructions();
-}
-/* ----------------
 * FUNCTION: It reset the screen drawing towers and loading rings based on a level selected
 */
 function reset() {
@@ -204,8 +203,6 @@ function reset() {
     ctx = c.getContext("2d");
     var towerCenterX;
 
-    // hide instructions
-    document.getElementById("instructions").style.zIndex="-1";
     document.getElementById("alert").style.zIndex="-1";
     activateMoveGame(true);
 
@@ -232,14 +229,7 @@ function reset() {
     ctx.fillText('Tower C',600,60);
 
     // It fills all rings at tower "A" based on a level selected
-    initialState(+document.getElementById("level").value);
-    document.getElementById("solution").style.visibility = "hidden";
-    document.getElementById("showHideSolutionBtn").innerHTML = "Show solution";
-    
-    // It builds the solution into a hidden div and shows a best # of movements
-    buildSolutionDiv();             
-    document.getElementById("bestMovementsToSolve").value = bestMovementsToSolve;
-    document.getElementById("playersMovements").value = countPlayersMovement;
+    initialState(GAME_LEVEL);
 }
 /* ----------------
 * FUNCTION: 1) It builds start rings into Tower A
@@ -249,46 +239,18 @@ function reset() {
 function initialState(levelGame) {
     towerArr[0].initialState(levelGame);
     countPlayersMovement = 0;
-    movementsToSolveArr = [];
-    movementsToSolve(levelGame, 'A', 'B', 'C');         // It build a solution into array
-    bestMovementsToSolve = movementsToSolveArr.length;
-    return;
-}
-/* ----------------
-* FUNCTION: It is a recursive call to reach a solution of its level "n"
-*/
-function movementsToSolve(n, fromTower, toTower, auxTower) {
-    if (n == 0) { return; }
-    movementsToSolve(n-1, fromTower, auxTower, toTower);
-    movementsToSolveArr.push("<li>Move disk "+n+" from tower "+fromTower+" to tower "+toTower+"</li>");
-    movementsToSolve(n-1, auxTower, toTower, fromTower);
-    return;
-}
-/* ----------------
-* FUNCTION: It builds a hidden div based on a global array movementsToSolveArr[]
-*/
-function buildSolutionDiv() {
-    document.getElementById("solution").innerHTML = "";
-    var solutionHtml = "";
-    for (var i=0; i<movementsToSolveArr.length; i++) {
-        solutionHtml += movementsToSolveArr[i];    
+    switch (GAME_LEVEL) {
+        case PRO_LEVEL: 
+            bestMovementsToSolve = PRO_MOVEMENTS;
+            break;
+        case HARD_LEVEL: 
+            bestMovementsToSolve = HARD_MOVEMENTS;
+            break;
+        default:
+            bestMovementsToSolve = BASIC_MOVEMENTS;
+            break;
     }
-    document.getElementById("solution").innerHTML = solutionHtml;
-}
-/* ----------------
-* FUNCTION: It displays a div solution to user
-*/
-function showSolution() {
-    var e = document.getElementById("solution");
-    if(e.style.display == 'block') {
-        e.style.display = 'none';
-        e.style.visibility = "hidden";
-        document.getElementById("showHideSolutionBtn").innerHTML = "Show solution";
-    } else {
-        e.style.display = 'block';
-        e.style.visibility = "visible";
-        document.getElementById("showHideSolutionBtn").innerHTML = "Hide solution";
-    }
+    return;
 }
 /* ----------------
 * FUNCTION: It hides a div id=alert
@@ -309,18 +271,6 @@ function showAlert(msg, nextAction) {
         document.getElementById("msgBoxDialogBtn").onclick = function onclick(event) {hideAlert(event)};
     }
     activateMoveGame(false);
-}
-/* ----------------
-* FUNCTION: It shows or hide instructions on screen
-*/
-function showInstructions() {
-    if (document.getElementById("instructions").style.zIndex=="1") {
-        document.getElementById("instructions").style.zIndex="-1";
-        activateMoveGame(true);
-    } else {
-        document.getElementById("instructions").style.zIndex="1";
-        activateMoveGame(false);
-    }
 }
 /* ----------------
 * FUNCTION: It enable/disable click on tower when shows a dialog box
