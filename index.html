@@ -10,13 +10,20 @@
         <script src="script.js" type="text/javascript" defer></script>
         <link rel="stylesheet" type="text/css" href="style.css">
 	</head>
-	<body onload="reset()">
-        <div id='alert' class='msgBoxDialog'>
-            <div id="alertMsg"></div>
-            <center><button id="msgBoxDialogBtn" onclick="hideAlert()">Ok</button></center>
+	<body>
+        <div>
+            Instructions: <a href="https://en.wikipedia.org/wiki/Tower_of_Hanoi">Wikipedia</a>
+            | Game level:
+            <select id="gameMode">
+                <option value="3" selected>3 rings</option>
+                <option value="4">4 rings</option>
+                <option value="5">5 rings</option>
+            </select>
+            <button id="reset">Reset</button>
+            | Msg: <span id="gameMsg"></span>
         </div>
-
-        <canvas id="myCanvas" onclick="getPositionClicked(event)" width="800" height="400">
+        
+        <canvas id="myCanvas" width="800" height="400">
             Your browser does not support the HTML5 canvas tag.
         </canvas>
     </body>
